@@ -45,16 +45,18 @@ class PanelView @JvmOverloads constructor(
 
     private fun applyRelativeLocation() {
         doOnLayout {
-            if (defaultY == null)
-                defaultY = y
+            if (defaultY == null) defaultY = y
 
             val safeArea = rootWindowInsets.getInsets(WindowInsets.Type.systemBars())
             val minY = safeArea.top + 16.dp
             val maxY = safeArea.top + (parent as View).height - safeArea.bottom - height - 16.dp
-            if (minY > maxY) {
-                y = relativeY.coerceIn(maxY, minY).toFloat()
-            } else {
+
+            // Check to prevent empty range issue
+            if (maxY > minY) {
                 y = relativeY.coerceIn(minY, maxY).toFloat()
+            } else {
+                // Handle case where minY > maxY, log an error or set a default position
+                y = minY.toFloat()
             }
         }
     }
